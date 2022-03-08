@@ -2,13 +2,25 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { TextField } from "@mui/material";
+import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+} from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateNote = () => {
   // title & details for the form
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
+  const [category, setCategory] = useState("");
+
+  // to navigate
+  const navigate = useNavigate();
 
   // for title & details errors
   const [titleError, setTitleError] = useState(false);
@@ -34,12 +46,23 @@ const CreateNote = () => {
 
     //check for title & details and then add the note
     if (title && details) {
-      console.log(title, details);
+      console.log(title, details, category);
+      fetch("http://localhost:8000/notes", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ title, details, category }),
+      }).then(() => navigate("/"));
     }
   };
 
   return (
-    <Container size="sm">
+    <Container
+      size="sm"
+      style={{
+        alignItems: "center",
+        marginTop: 20,
+      }}
+    >
       <Typography
         variant="h6"
         color="textSecondary"
@@ -76,9 +99,35 @@ const CreateNote = () => {
           error={detailsError}
         />
 
+        <FormControl>
+          <FormLabel>Notes Category</FormLabel>
+          <RadioGroup
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            row
+          >
+            <FormControlLabel
+              value="money"
+              label={"Money"}
+              control={<Radio />}
+            />
+            <FormControlLabel
+              value="todos"
+              label={"Todos"}
+              control={<Radio />}
+            />
+            <FormControlLabel
+              value="reminders"
+              label={"Reminders"}
+              control={<Radio />}
+            />
+            <FormControlLabel value="work" label={"Work"} control={<Radio />} />
+          </RadioGroup>
+        </FormControl>
+        <br />
         <Button
           type="submit"
-          color="secondary"
+          color="primary"
           variant="contained"
           endIcon={<ArrowForwardIosIcon />}
         >
